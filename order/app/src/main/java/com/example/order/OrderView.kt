@@ -52,6 +52,5 @@ fun MainDishSection() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-
     ) {}
     }
