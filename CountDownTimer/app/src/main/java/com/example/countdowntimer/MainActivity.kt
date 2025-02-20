@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlusOne
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.outlined.Timer10
 import androidx.compose.material.icons.outlined.Timer10Select
 import androidx.compose.material.icons.outlined.Timer3Select
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -115,4 +117,26 @@ fun TopBar(iconOnClick: (Int) -> Unit) {
 @Composable
 private fun TopBarPreview() {
     TopBar(iconOnClick = {})
+}
+
+@Composable
+fun BottomBar(
+    iconOnClick: (Int) -> Unit
+) {
+    BottomAppBar(
+        actions = {
+            IconButton(onClick = { iconOnClick(60) }) {
+                Icon(
+                    imageVector = Icons.Default.PlusOne,
+                    contentDescription = "PlusOne",
+                )
+            }
+        }
+    )
+}
+
+@Preview
+@Composable
+private fun BottomBarPreview() {
+    BottomBar(iconOnClick = {})
 }
