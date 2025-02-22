@@ -22,6 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -30,6 +31,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.countdowntimer.ui.theme.CountDownTimerTheme
 import com.example.countdowntimer.ui.theme.Pink80
 
@@ -38,17 +41,35 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            CountDownTimerTheme {}
+            CountDownTimerTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background,
+                ) {
+                    ExampleScaffold()
+                }
+            }
         }
     }
 }
 
 @Composable
-fun ExampleScaffold() {
-    Scaffold(topBar = { Text("TopAppBar") },
-        bottomBar = { Text("BottomAppBar") },
+fun ExampleScaffold(viewModel: ExampleViewModel = viewModel()) {
+    val uiState = viewModel.uiState
+    val iconOnClick: (Int) -> Unit = { time: Int ->
+        viewModel.addTime(time)
+    }
+    val toggleTimer = {
+        if (uiState.isRunning.value) {
+            viewModel.stopTimer()
+        } else {
+            viewModel.startTimer(viewModel.uiState.time.value)
+        }
+    }
+    Scaffold(topBar = { TopBar(iconOnClick = iconOnClick) },
+        bottomBar = { BottomBar(iconOnClick = iconOnClick) },
         floatingActionButton = {
-            FloatingActionButton(onClick = {/*TODO*/ }, content = {
+            FloatingActionButton(onClick = toggleTimer, content = {
                 Icon(
                     imageVector = Icons.Filled.Timer,
                     contentDescription = "Timer",
@@ -60,10 +81,22 @@ fun ExampleScaffold() {
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize()
-                    .background(color = Pink80),
+                    .background(color = MaterialTheme.colorScheme.background),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "content")
+                val remain = uiState.timeLeft.value.toFloat()
+                val total = uiState.time.value.toFloat()
+                Arc(
+                    color = MaterialTheme.colorScheme.primary,
+                    timeLeft = remain / total,
+                )
+                val minute = uiState.timeLeft.value / 1000L / 60L
+                val second = uiState.timeLeft.value / 1000L % 60L
+                Text(
+                    text = "%1$02d:%2$02d".format(minute, second),
+                    fontSize = 100.sp,
+                    color = MaterialTheme.colorScheme.primary,
+                )
             }
         })
 }
@@ -82,7 +115,8 @@ fun TopBar(iconOnClick: (Int) -> Unit) {
             Text(
                 text = "CountDownTimer", maxLines = 1, overflow = TextOverflow.Ellipsis
             )
-        }, navigationIcon = {
+        },
+        navigationIcon = {
             IconButton(onClick = {/*todo*/ }) {
                 Icon(
                     imageVector = Icons.Filled.Timer,
@@ -109,7 +143,7 @@ fun TopBar(iconOnClick: (Int) -> Unit) {
             navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
             titleContentColor = MaterialTheme.colorScheme.onPrimary,
             actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
-        )
+        ),
     )
 }
 
@@ -131,7 +165,7 @@ fun BottomBar(
                     contentDescription = "PlusOne",
                 )
             }
-        }
+        },
     )
 }
 
