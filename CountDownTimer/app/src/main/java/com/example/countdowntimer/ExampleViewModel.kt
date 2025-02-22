@@ -1,11 +1,13 @@
 package com.example.countdowntimer
 
-class ExampleViewModel {
+import androidx.lifecycle.ViewModel
+
+class ExampleViewModel : ViewModel() {
     var uiState = ExampleUiState()
         private set//セッターをプライベート型にする。外部から参照することはできるが、値を変更することはできない
     var timer: MyCountDownTimer? = null
 
-    fun startTimer(millisInFuture: Long, countDownInterval: Long) {
+    fun startTimer(millisInFuture: Long) {
         uiState.time.value = millisInFuture
         uiState.isRunning.value = true
         timer = MyCountDownTimer(
@@ -20,7 +22,7 @@ class ExampleViewModel {
                 uiState.time.value = millisInFuture
                 uiState.timeLeft.value = 0
                 uiState.isRunning.value = false
-            }
+            },
         )
         timer?.start()
     }
